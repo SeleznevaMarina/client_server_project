@@ -9,7 +9,6 @@ def start_server():
 
 def start_client(client_id):
     asyncio.run(run_client(client_id))
-    
 
 if __name__ == "__main__":
     server_process = multiprocessing.Process(target=start_server)
@@ -21,6 +20,13 @@ if __name__ == "__main__":
     client1_process.start()
     client2_process.start()
 
+    # Ограничение времени 5 минут
+    time.sleep(300)
+
+    # Завершение процессов
+    server_process.terminate()
+    client1_process.terminate()
+    client2_process.terminate()
     server_process.join()
     client1_process.join()
     client2_process.join()

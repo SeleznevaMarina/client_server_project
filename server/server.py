@@ -40,17 +40,19 @@ async def process_message(message, writer, client_id):
     now = datetime.datetime.now()
     if random.random() < IGNORE_PROBABILITY:
         print(f'[{now}] Ignored message from Client {client_id}: {message}')
+        await log_response(message, '(проигнорировано)')
         return
 
     delay = random.uniform(0.1, 1)
     await asyncio.sleep(delay)
-    response = f'[{RESPONSE_COUNT}] PONG ({message}) ({client_id}\n)'
+    response = f'[{RESPONSE_COUNT}] PONG ({message}) ({client_id})\n'
     print(f'{datetime.datetime.now().strftime("%H:%M:%S.%f")[:-3]} Server sent to Client {client_id}: {response}')  
     writer.write(response.encode())
     await writer.drain()
 
     await log_response(message, response)
     RESPONSE_COUNT += 1
+
 
 async def send_keepalive():
     while True:
