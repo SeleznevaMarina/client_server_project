@@ -1,16 +1,26 @@
 import asyncio
-from server.server import start_server, start_clients
+import multiprocessing
+import time
+from client.client import run_client
+from server.server import run_server
 
-async def main():
-    server_task = asyncio.create_task(start_server())
-    client_task = asyncio.create_task(start_clients())
+def start_server():
+    asyncio.run(run_server())
 
-    await asyncio.sleep(300)
-
-    server_task.cancel()
-    client_task.cancel()
-
-    await asyncio.gather(server_task, client_task, return_exceptions=True)
+def start_client(client_id):
+    asyncio.run(run_client(client_id))
+    
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    server_process = multiprocessing.Process(target=start_server)
+    client1_process = multiprocessing.Process(target=start_client, args=(1,))
+    client2_process = multiprocessing.Process(target=start_client, args=(2,))
+
+    server_process.start()
+    time.sleep(1)
+    client1_process.start()
+    client2_process.start()
+
+    server_process.join()
+    client1_process.join()
+    client2_process.join()
